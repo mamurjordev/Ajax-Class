@@ -1,24 +1,14 @@
 <?php
 
-$host = 'localhost';
-$username= 'root';
-$password = '';
-$database = 'ajax';
+    include_once 'libs/database.php';
 
-$conn = new mysqli($host,$username,$password,$database);
+    $email = $_POST['email'];
+    $name = $_POST['name'];
 
-$name = $_POST['mamu'];
-$email = $_POST['your_email'];
-$phone = $_POST['your_phone'];
+    $insert = "INSERT INTO students (fname,email) VALUES ('$name','$email')";
+    $result = $conn->query($insert);
+    if ($result) {
+       echo 'Data has been saved.';
+    }
 
-$sql = "INSERT INTO students (fname,email,phone) VALUES ('$name','$email','$phone')";
-$output = $conn->query($sql);
-
-if($output == true){
-    echo 'Form data insert success.';
-}
-
-
-
-
-
+?>
