@@ -15,6 +15,10 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
+                    <div id="success-msg">
+
+                    </div>
+
                     <div class="card">
                         <div class="card-header">
                             <h4 class="mb-0 card-title d-flex justify-content-between align-items-center">Student Lists
@@ -24,6 +28,8 @@
                             </h4>
                         </div>
                         <div class="card-body">
+                            <input type="text" class="form-control" id="search-text" placeholder="search text.....">
+                            <input type="text" class="form-control" id="text" placeholder="search text.....">
                             <table class="table table-sm">
                                 <thead>
                                     <th>SL</th>
@@ -90,7 +96,7 @@
 
             $(document).on('click', '#delete-student', function() {
                 let delete_id = $(this).attr('student_id');
-                if (delete_id) {
+                if (confirm('Are you sure delete?')) {
                     $.ajax({
                         url: 'delete.php',
                         type: 'GET',
@@ -98,24 +104,65 @@
                             delete_id: delete_id
                         },
                         success: function(response) {
-                            console.log(response);
+                            student_get()
+                            $('#success-msg').append('<span class="d-block alert alert-success">' + response + '</span>')
+                        }
+                    });
+                } else {
+                    alert('your data saved?')
+                }
+
+            })
+
+            $(document).on('click', 'button#edit-student', function() {
+                let edit_id = $(this).attr('student_id');
+                if (edit_id) {
+                    $.ajax({
+                        url: 'edit.php',
+                        type: 'GET',
+                        data: {
+                            edit_id: edit_id
+                        },
+                        success: function(response) {
+                            $('#edit-modal-show').html(response)
+                            let editModal = new bootstrap.Modal(document.getElementById('edit-student-form'), {
+                                keyboard: false
+                            })
+                            editModal.show()
                         }
                     });
                 }
 
             })
 
-            $(document).on('click', '#edit-student', function() {
-                let edit_id = $(this).attr('student_id');
-                if (edit_id) {
-                    myModal.show();
-                }
+            $(document).on('submit', 'form#update-student-form', function(e) {
+                e.preventDefault();
+                let data = new FormData(this);
+                $.ajax({
+                    url: 'update.php',
+                    type: 'POST',
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                    success: function(response) {
+                        document.getElementById('edit-student-form').style.display = 'none';
+                        document.querySelector('.modal-backdrop').style.display = 'none';
+                        $('#success-msg').append('<span class="d-block alert alert-success">' + response + '</span>')
+                        student_get()
+                    }
+                });
+            })
 
+            $(document).on('keyup click', '#search-text', function() {
+                $('#text').val(($(this).val()))
             })
 
         });
     </script>
 </body>
+
+</html>
 
 <div class="modal fade" tabindex="-1" data-bs-backdrop="static" id="student-modal-form">
     <div class="modal-dialog modal-lg">
@@ -149,4 +196,7 @@
     </div>
 </div>
 
-</html>
+
+<div id="edit-modal-show">
+
+</div>
